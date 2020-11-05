@@ -5,19 +5,13 @@ const bodyParser = require("body-parser");
 const { getExcuse, slackHook } = require("../utils/index");
 const Jimp = require("jimp");
 const upload = require("../utils/upload");
+const { bg1, bg2, bg3, bg4, bg5, bg6 } = require("../utils/imageBase64");
 
-const imageArr = [
-  "./images/bg-1.jpg",
-  "./images/bg-2.jpg",
-  "./images/bg-3.jpg",
-  "./images/bg-4.jpg",
-  "./images/bg-5.jpg",
-  "./images/bg-6.jpg",
-];
+const imageArr = [bg1, bg2, bg3, bg4, bg5, bg6];
 
 const readImage = (imageUrl, message, upload, type) => {
   return new Promise((resolve) => {
-    Jimp.read(path.resolve(__dirname, imageUrl))
+    Jimp.read(Buffer.from(imageUrl, "base64"))
       .then(async (resolvedImage) => {
         const font = await Jimp.loadFont(
           path.resolve(__dirname, "./fonts/TimesNewRoman/font.fnt")
