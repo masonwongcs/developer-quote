@@ -23,6 +23,7 @@ const slackHook = async ({ url, text }) => {
       : "https://hooks.slack.com/services/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",
     {
       text: text,
+      response_type: "in_channel",
     }
   );
 };
