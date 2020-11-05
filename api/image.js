@@ -13,11 +13,13 @@ const readImage = (imageUrl, message, upload, type) => {
   return new Promise((resolve) => {
     Jimp.read(Buffer.from(imageUrl, "base64"))
       .then(async (resolvedImage) => {
-        const font = await Jimp.loadFont(
-          path.resolve(__dirname, "./fonts/TimesNewRoman/font.fnt")
-        );
+        // const font = await Jimp.loadFont(
+        //   path.resolve(__dirname, "../fonts/TimesNewRoman/font.fnt")
+        // );
+        const font = await Jimp.loadFont(Jimp.FONT_SANS_64_WHITE);
         const width = resolvedImage.getWidth();
         const MAX_WIDTH = width * 0.5;
+        const fonts = Jimp.FONT_SANS_64_WHITE
         const fontHeight = Jimp.measureTextHeight(font, message, MAX_WIDTH);
 
         const height = resolvedImage.getHeight();
