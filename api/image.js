@@ -17,10 +17,10 @@ const imageArr = [
 
 const readImage = (imageUrl, message, upload, type) => {
   return new Promise((resolve) => {
-    Jimp.read(path.join(__dirname, imageUrl))
+    Jimp.read(path.resolve(__dirname, imageUrl))
       .then(async (resolvedImage) => {
         const font = await Jimp.loadFont(
-          path.join(__dirname, "./fonts/TimesNewRoman/font.fnt")
+          path.resolve(__dirname, "./fonts/TimesNewRoman/font.fnt")
         );
         const width = resolvedImage.getWidth();
         const MAX_WIDTH = width * 0.5;
