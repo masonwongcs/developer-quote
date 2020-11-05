@@ -7,20 +7,20 @@ const Jimp = require("jimp");
 const upload = require("../utils/upload");
 
 const imageArr = [
-  "../images/bg-1.jpg",
-  "../images/bg-2.jpg",
-  "../images/bg-3.jpg",
-  "../images/bg-4.jpg",
-  "../images/bg-5.jpg",
-  "../images/bg-6.jpg",
+  "./images/bg-1.jpg",
+  "./images/bg-2.jpg",
+  "./images/bg-3.jpg",
+  "./images/bg-4.jpg",
+  "./images/bg-5.jpg",
+  "./images/bg-6.jpg",
 ];
 
-const readeImage = (imageUrl, message) => {
+const readImage = (imageUrl, message, upload, type) => {
   return new Promise((resolve) => {
     Jimp.read(path.join(__dirname, imageUrl))
       .then(async (resolvedImage) => {
         const font = await Jimp.loadFont(
-          path.join(__dirname, "../fonts/TimesNewRoman/font.fnt")
+          path.join(__dirname, "./fonts/TimesNewRoman/font.fnt")
         );
         const width = resolvedImage.getWidth();
         const MAX_WIDTH = width * 0.5;
@@ -33,8 +33,17 @@ const readeImage = (imageUrl, message) => {
 
         resolvedImage.print(font, x, y, message, MAX_WIDTH);
         const base64 = await resolvedImage.getBase64Async("image/jpeg");
-        const uploadUrl = upload(base64);
-        resolve(uploadUrl);
+        if (upload) {
+          const uploadUrl = upload(base64);
+          resolve(uploadUrl);
+        } else {
+          if (type === "buffer") {
+            const buffer = await resolvedImage.getBufferAsync("image/jpeg");
+            resolve(buffer);
+          } else {
+            resolve(base64);
+          }
+        }
       })
       .catch((err) => {
         console.error(err);
@@ -43,15 +52,34 @@ const readeImage = (imageUrl, message) => {
 };
 
 app.use(bodyParser.urlencoded({ extended: true }));
-module.exports = async (req, res) => {
+const image = async (req, res) => {
   const excuse = await getExcuse();
   const random = Math.ceil(Math.random() * 5);
   const randomImage = imageArr[random];
   // const { channel_name, user_name, response_url } = req.body;
-  const image = await readeImage(randomImage, excuse);
+  const image = await readImage(randomImage, excuse, upload);
   await slackHook({
     text: image,
   });
 
   res.send(image);
+};
+
+const imageResponse = async (req, res) => {
+  const excuse = await getExcuse();
+  const random = Math.ceil(Math.random() * 5);
+  const randomImage = imageArr[random];
+  const data = await readImage(randomImage, excuse, false, "buffer");
+  const img = Buffer.from(data, "base64");
+
+  res.writeHead(200, {
+    "Content-Type": "image/jpeg",
+    "Content-Length": img.length,
+  });
+  res.end(img);
+};
+
+module.exports = {
+  image,
+  imageResponse,
 };

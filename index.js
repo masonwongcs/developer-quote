@@ -3,9 +3,10 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const bodyParser = require("body-parser");
 const command = require("./api/command");
-const image = require("./api/image");
+const { image, imageResponse } = require("./api/image");
 
-app.use("/test", image);
+app.use("/image", image);
+app.use("/imageResponse", imageResponse);
 app.use("/command", command);
 
 app.listen(PORT, function () {
